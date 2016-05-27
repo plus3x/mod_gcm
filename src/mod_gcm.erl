@@ -16,7 +16,7 @@
 
 -define(NS_GCM, "https://gcm-http.googleapis.com/gcm"). %% I hope Google doesn't mind.
 -define(GCM_URL, ?NS_GCM ++ "/send").
--define(CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8").
+-define(CONTENT_TYPE, "application/json").
 
 
 -export([start/2, stop/1, message/3, iq/3]).
@@ -66,9 +66,9 @@ url_encode([{Key,Value}|R],Acc) ->
 
 
 %% Send an HTTP request to Google APIs and handle the response
-send([{Key, Value}|R], API_KEY) ->
+send(JSON, API_KEY) ->
 	Header = [{"Authorization", url_encode([{"key", API_KEY}])}],
-	Body = url_encode([{Key, Value}|R]),
+	Body = iolist_to_binary(mochijson2:encode(JSON)),
 	ssl:start(),
 	application:start(inets),
 	{ok, RawResponse} = httpc:request(post, {?GCM_URL, Header, ?CONTENT_TYPE, Body}, [], []),
@@ -109,7 +109,7 @@ message(From, To, Packet) ->
 							case catch Result of 
 								[] -> ?DEBUG("mod_gcm: No such record found for ~s", [JTo]);
 								[#gcm_users{gcm_key = API_KEY}] ->
-									Args = [{"registration_id", API_KEY}, {"data.message", Body}, {"data.source", JFrom}, {"data.destination", JTo}],
+									Args = {struct, [{to, API_KEY}, {priority, high}, {notification, {struct, [{title, JFrom},{body, Body}]}}]},
 									send(Args, ejabberd_config:get_global_option(gcm_api_key, fun(V) -> V end))
 							end
 						end;
