@@ -84,7 +84,7 @@ send([{Key, Value}|R], API_KEY) ->
 %% TODO: Define some kind of a shaper to prevent floods and the GCM API to burn out :/
 %% Or this could be the limits, like 10 messages/user, 10 messages/hour, etc
 message(From, To, Packet) ->
-	Type = xml:get_tag_attr_s(<<"type">>, Packet),
+	Type = fxml:get_tag_attr_s(<<"type">>, Packet),
 	?INFO_MSG("Offline message ~s", [From]),
 	case catch Type of 
 		"normal" -> ok;
@@ -95,7 +95,7 @@ message(From, To, Packet) ->
 			ToUser = To#jid.user,
 			ToServer = To#jid.server,
 
-			Body = xml:get_path_s(Packet, [{elem, <<"body">>}, cdata]),
+			Body = fxml:get_path_s(Packet, [{elem, <<"body">>}, cdata]),
 
 			%% Checking subscription
 			{Subscription, _Groups} = 
@@ -125,7 +125,7 @@ iq(#jid{user = User, server = Server} = From, To, #iq{type = Type, sub_el = SubE
 	{MegaSecs, Secs, _MicroSecs} = now(),
 	TimeStamp = MegaSecs * 1000000 + Secs,
 
-	API_KEY = xml:get_tag_cdata(xml:get_subtag(SubEl, <<"key">>)),
+	API_KEY = fxml:get_tag_cdata(fxml:get_subtag(SubEl, <<"key">>)),
 
 	F = fun() -> mnesia:write(#gcm_users{user={LUser, LServer}, gcm_key=API_KEY, last_seen=TimeStamp}) end,
 
