@@ -14,7 +14,7 @@
 -record(gcm_users, {user, gcm_key, last_seen}).
 
 
--define(NS_GCM, "https://android.googleapis.com/gcm"). %% I hope Google doesn't mind.
+-define(NS_GCM, "https://gcm-http.googleapis.com/gcm"). %% I hope Google doesn't mind.
 -define(GCM_URL, ?NS_GCM ++ "/send").
 -define(CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8").
 
