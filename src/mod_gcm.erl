@@ -76,7 +76,7 @@ send([{Key, Value}|R], API_KEY) ->
 	{{_, SCode, Status}, ResponseBody} = {element(1, RawResponse), element(3, RawResponse)},
 	%% TODO: Errors 5xx
 	case catch SCode of
-		200 -> ?DEBUG("mod_gcm: A message was sent", []);
+		200 -> ?DEBUG("mod_gcm: A message was sent: ~s", [Body]);
 		401 -> ?ERROR_MSG("mod_gcm: ~s", [Status]);
 		_ -> ?ERROR_MSG("mod_gcm: ~s", [ResponseBody])
 	end.
