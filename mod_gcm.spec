@@ -1,0 +1,5 @@
+author: "mrDoctorWho <mrdoctorwho@gmail.com>"
+category: "service"
+summary: "Google Cloud Messaging API for Ejabberd (PUSH Messages)"
+home: "https://github.com/kirillzh/ejabberd_mod_gcm/tree/master"
+url: "git@github.com:kirillzh/ejabberd_mod_gcm.git"
