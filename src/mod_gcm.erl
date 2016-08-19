@@ -100,21 +100,18 @@ message(From, To, Packet) ->
 			%% Checking subscription
 			{Subscription, _Groups} = 
 				ejabberd_hooks:run_fold(roster_get_jid_info, ToServer, {none, []}, [ToUser, ToServer, From]),
-			case Subscription of
-				both ->
-					case catch Body of
-						<<>> -> ok; %% There is no body
-						_ ->
-							Result = mnesia:dirty_read(gcm_users, {ToUser, ToServer}),
-							case catch Result of 
-								[] -> ?DEBUG("mod_gcm: No such record found for ~s", [JTo]);
-								[#gcm_users{gcm_key = API_KEY}] ->
-									Args = {struct, [{to, API_KEY}, {priority, high}, {notification, {struct, [{title, JFrom},{body, Body}]}}]},
-									send(Args, ejabberd_config:get_global_option(gcm_api_key, fun(V) -> V end))
-							end
-						end;
-					_ -> ok
-			end
+				case catch Body of
+					<<>> -> ok; %% There is no body
+					_ ->
+						Result = mnesia:dirty_read(gcm_users, {ToUser, ToServer}),
+						case catch Result of 
+							[] -> ?DEBUG("mod_gcm: No such record found for ~s", [JTo]);
+							[#gcm_users{gcm_key = API_KEY}] ->
+								Args = {struct, [{to, API_KEY}, {priority, high}, {notification, {struct, [{title, JFrom},{body, Body}]}}]},
+								send(Args, ejabberd_config:get_global_option(gcm_api_key, fun(V) -> V end))
+						end
+					end;
+				_ -> ok
 	end.
 
 
