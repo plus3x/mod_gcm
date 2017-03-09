@@ -107,7 +107,7 @@ message(From, To, Packet) ->
 						case catch Result of 
 							[] -> ?DEBUG("mod_gcm: No such record found for ~s", [JTo]);
 							[#gcm_users{gcm_key = API_KEY}] ->
-								Args = {struct, [{to, API_KEY}, {priority, high}, {notification, {struct, [{title, JFrom},{body, Body}]}}]},
+								Args = {struct, [{to, API_KEY}, {priority, high}, {data, {struct, [{title, JFrom},{body, Body}]}}]},
 								send(Args, ejabberd_config:get_global_option(gcm_api_key, fun(V) -> V end))
 						end
 					end;
